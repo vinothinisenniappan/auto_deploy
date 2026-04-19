@@ -1,27 +1,34 @@
 pipeline {
     agent any
+
     stages {
-        stage('Pull') {
+        stage('Pull Code') {
             steps {
-                echo 'Pulling code from GitHub...'
+                // Actually pulls the code so Jenkins has the latest files
+                git branch: 'main', url: 'https://github.com/vinothinisenniappan/auto_deploy.git'
             }
         }
-        stage('Build') {
+        stage('Build Image') {
             steps {
-                bat 'docker build -t vinothinisenniappan/my-web-app:latest .'
+                // Switch to E: drive where your Dockerfile lives
+                bat 'E: && cd E:\\devops_2026 && docker build -t vinothinisenniappan/my-web-app:latest .'
             }
         }
-        stage('Push') {
+        stage('Push to Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    bat "docker login -u %USER% -p %PASS%"
-                    bat "docker push vinothinisenniappan/my-web-app:latest"
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                        bat "docker login -u %USER% -p %PASS%"
+                        bat "E: && cd E:\\devops_2026 && docker push vinothinisenniappan/my-web-app:latest"
+                    }
                 }
             }
         }
-        stage('Deploy') {
+        stage('Deploy & Force Refresh') {
             steps {
-                bat 'kubectl apply -f deployment.yaml'
+                // Apply the YAML and then force the pods to restart with the new image
+                bat 'E: && cd E:\\devops_2026 && kubectl apply -f deployment.yaml --kubeconfig=C:\\Users\\vinot\\.kube\\config --validate=false'
+                bat 'kubectl rollout restart deployment my-web-app --kubeconfig=C:\\Users\\vinot\\.kube\\config'
             }
         }
     }
