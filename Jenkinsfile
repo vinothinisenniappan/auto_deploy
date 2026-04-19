@@ -4,13 +4,13 @@ pipeline {
     stages {
         stage('Pull Code') {
             steps {
-                // Actually pulls the code so Jenkins has the latest files
+                // ACTUAL git command to pull from your repository
                 git branch: 'main', url: 'https://github.com/vinothinisenniappan/auto_deploy.git'
             }
         }
         stage('Build Image') {
             steps {
-                // Switch to E: drive where your Dockerfile lives
+                // We must navigate to the E: drive first
                 bat 'E: && cd E:\\devops_2026 && docker build -t vinothinisenniappan/my-web-app:latest .'
             }
         }
@@ -24,10 +24,12 @@ pipeline {
                 }
             }
         }
-        stage('Deploy & Force Refresh') {
+        stage('Deploy & Refresh') {
             steps {
-                // Apply the YAML and then force the pods to restart with the new image
+                // 1. Apply the configuration
                 bat 'E: && cd E:\\devops_2026 && kubectl apply -f deployment.yaml --kubeconfig=C:\\Users\\vinot\\.kube\\config --validate=false'
+                
+                // 2. FORCE the pods to restart so the new changes show up instantly
                 bat 'kubectl rollout restart deployment my-web-app --kubeconfig=C:\\Users\\vinot\\.kube\\config'
             }
         }
