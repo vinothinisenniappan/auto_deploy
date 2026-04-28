@@ -231,6 +231,14 @@ body {
     border: 1px solid var(--line);
 }
 
+/* fallback styling for replaced/broken images */
+.img-fallback {
+    background: linear-gradient(180deg, #fffaf1, #f4efe4);
+    display: block;
+    object-fit: cover;
+    color: var(--accent-deep);
+}
+
 .kicker {
     display: inline-flex;
     align-items: center;
