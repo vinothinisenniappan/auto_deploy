@@ -107,13 +107,11 @@
     </div>
     <script>
     document.addEventListener('DOMContentLoaded', function(){
-        const placeholder = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="100%" height="100%" fill="%23fffaf1"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%238d6827" font-size="20">Image unavailable</text></svg>';
         document.querySelectorAll('img').forEach(img=>{
             img.addEventListener('error', function(){
                 if(this.dataset.fallback) return;
                 this.dataset.fallback = '1';
-                this.classList.add('img-fallback');
-                this.src = placeholder;
+                this.remove();
             });
         });
     });
